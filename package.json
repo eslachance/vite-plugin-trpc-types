@@ -1,0 +1,48 @@
+{
+  "name": "vite-plugin-trpc-types",
+  "version": "1.0.0",
+  "description": "A Vite plugin for seamless tRPC type synchronization between client and server",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "vite",
+    "plugin",
+    "trpc",
+    "typescript",
+    "types",
+    "type-safety",
+    "monorepo",
+    "fullstack"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "peerDependencies": {
+    "vite": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/vite-plugin-trpc-types.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/vite-plugin-trpc-types/issues"
+  },
+  "homepage": "https://github.com/yourusername/vite-plugin-trpc-types#readme"
+} 
