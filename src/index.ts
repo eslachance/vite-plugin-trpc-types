@@ -88,7 +88,12 @@ export {};
 
       // Log when server files change
       server.watcher.on('change', (file: string) => {
-        if (file.includes(serverDir) && (file.endsWith('.ts') || file.endsWith('.js'))) {
+        // Use the same precise file matching as HMR
+        const normalizedFile = file.replace(/\\/g, '/');
+        const normalizedServerDir = serverDir.replace(/\\/g, '/');
+        
+        if (normalizedFile.startsWith(normalizedServerDir) && 
+            (file.endsWith('.ts') || file.endsWith('.js'))) {
           log(`Server file changed: ${file}`);
           logger('🔄 Server types changed, updating client types...');
           
@@ -107,19 +112,47 @@ export {};
 
     // Provide HMR support
     handleHotUpdate({ file, server }: { file: string; server: any }) {
-      if (file.includes(serverPath) && (file.endsWith('.ts') || file.endsWith('.js'))) {
-        log(`HMR: Server file updated: ${file}`);
-        logger('🔄 Server types updated, refreshing client...');
+      // Only handle HMR in development mode
+      if (server.config.command !== 'serve') {
+        return;
+      }
+
+      // More precise file matching - check if file is actually in the server directory
+      const normalizedFile = file.replace(/\\/g, '/');
+      const normalizedServerPath = resolve(serverPath).replace(/\\/g, '/');
+      
+      // Only handle files that are actually within our watched server directory
+      if (normalizedFile.startsWith(normalizedServerPath) && 
+          (file.endsWith('.ts') || file.endsWith('.js'))) {
         
-        // Invalidate the virtual module
+        log(`HMR: Server file updated: ${file}`);
+        logger('🔄 Server types updated, refreshing virtual module...');
+        
+        // Invalidate the virtual module to trigger re-compilation of dependent modules
         const module = server.moduleGraph.getModuleById(`\0virtual:${virtualModuleName}`);
         if (module) {
           server.moduleGraph.invalidateModule(module);
           log('HMR: Invalidated virtual module');
+          
+          // Trigger HMR for modules that import the virtual module
+          server.ws.send({
+            type: 'update',
+            updates: [{
+              type: 'js-update',
+              path: `\0virtual:${virtualModuleName}`,
+              acceptedPath: `\0virtual:${virtualModuleName}`,
+              timestamp: Date.now(),
+            }]
+          });
         }
-        return [];
+        
+        // Return undefined to let Vite handle normal HMR for other files
+        // Only return an empty array if we want to completely prevent HMR
+        return;
       }
-      return [];
+      
+      // For all other files, let Vite handle HMR normally
+      return;
     },
   };
 }
