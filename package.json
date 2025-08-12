@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-trpc-types",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Vite plugin for seamless tRPC type synchronization between client and server",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -45,4 +45,4 @@
     "url": "https://github.com/yourusername/vite-plugin-trpc-types/issues"
   },
   "homepage": "https://github.com/yourusername/vite-plugin-trpc-types#readme"
-} 
+}
